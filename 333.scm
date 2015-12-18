@@ -1,0 +1,8 @@
+(load "ch335.scm")
+(define (average a b c)
+  (define sum (make-connector))
+  (define two (make-connector))
+  (adder a b sum)
+  (constant 2 two)
+  (multiplier c two sum)
+  'ok)

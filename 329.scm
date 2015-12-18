@@ -1,0 +1,26 @@
+(define (inverter input output)
+  (define (invert-input)
+    (let ((new-value (logical-not (get-signal input))))
+      (after-delay inverter-delay
+                   (lambda ()
+                     (set-signal! output new-value)))))
+  (add-action! input invert-input)
+  'ok)
+
+(define (and-gate a1 a2 output)
+  (define (and-action-procedure)
+    (let ((new-value (logical-and (get-signal a1) (get-signal a2))))
+      (after-delay and-gate-delay
+                   (lambda ()
+                     (set-signal! output new-value)))))
+  'ok)
+
+(define (or-gate a1 a2 output)
+  (let ((inverter-a1 (make-wire))
+        (inverter-a2 (make-wire))
+        (inverter-output (make-wire)))
+    (inverter a1 inverter-a1)
+    (inverter a2 inverter-a2)
+    (inverter output inverter-output)
+    (and-gate inverter-a1 inverter-a2)
+    'ok))

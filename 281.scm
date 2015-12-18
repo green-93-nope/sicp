@@ -1,0 +1,5 @@
+(load "280.scm")
+(define (scheme-number->scheme-number n) n)
+(define (complex->complex z) z)
+(put 'scheme-number 'scheme-number scheme-number->scheme-number)
+(put 'complex 'complex complex->complex)

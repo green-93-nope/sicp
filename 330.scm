@@ -1,0 +1,22 @@
+(define (ripple-adder a b c output-s output-c)
+  (define (ripple-adder-input)
+    (let ((oneth (oneth-of-sum a b c))
+          (tenth (tenth-of-sum a b c)))
+      (after-delay ripple-delay
+                   (lambda ()
+                     (set-signal! output-s oneth)
+                     (set-signal! output-c tenth)))))
+  (add-action! a ripple-adder-input)
+  (add-action! b ripple-adder-input)
+  (add-action! c ripple-adder-input)
+  'ok)
+
+(define (ripple-carry-adder sets-a sets-b sets-s c)
+  (define (ripple-carry-iter sets-a sets-b sets-s c)
+    (cond ((or (nulll? sets-a) (triple-not-same-length sets-a sets-b))
+           (error "Wrong with sets-a sets-b--RIPPLE-CARRY-ADDER" sets-a sets-b))
+          ((null? (cdr sets-a))
+           (ripple-adder (car sets-a) (car sets-b) 0 (car sets-s) c))
+          (else
+           (let ((output-from-previous (make-wire)))
+             (ripple-carry-iter (cdr sets-a) (cdr sets-b) (cdr sets-s) output-))))
