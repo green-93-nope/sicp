@@ -1,0 +1,1 @@
+("6.7" ("0f6847578abe705d519fabc428f3b407e64933f2" . "9a744acf7bc4800a70cc4a3466b3d3fc7bc164ce") #"/home/green/work/sicp/stream.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"rackunit" #"main.rkt"))

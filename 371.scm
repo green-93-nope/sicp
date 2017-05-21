@@ -1,3 +1,7 @@
+(load "354.scm")
+(load "370.scm")
+(load "ch351.scm")
+
 (define (weight-sr pair)
   (+ (cube (car pair))
      (cube (cadr pair))))
@@ -26,3 +30,7 @@
                    #f))))
     (stream-filter equal-stream-formal
                    stream-pairs-cube)))
+
+(define Ramanujan
+  (stream-map (lambda (pair) (weight-sr pair))
+              pairs-sr))

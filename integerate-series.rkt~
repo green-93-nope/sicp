@@ -1,0 +1,26 @@
+#lang racket
+
+(require rackunit "stream.rkt")
+
+(define (add-my-stream s1 s2)
+  (my-stream-map + s1 s2))
+(define (div-my-stream s1 s2)
+  (my-stream-map / s1 s2))
+
+(define ones (cons-my-stream 1 ones))
+(define integers
+  (cons-my-stream 1
+                  (add-my-stream ones integers)))
+
+(define (integrate-series s)
+  (div-my-stream (my-stream-cdr s)
+                 integers))
+
+(define exp-series
+  (cons-my-stream 1 (integrate-series exp-series)))
+(define cosine-series
+  (cons-my-stream 1 (stream-map
+                     (lambda (x) (* -1 x))
+                     sine-series)))
+(define sine-series
+  (cons-my-stream 0 cosine-series))

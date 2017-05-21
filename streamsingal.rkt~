@@ -1,0 +1,10 @@
+#lang racket
+
+(require rackunit "stream.rkt")
+
+(define (integral integrand initial-value dt)
+  (define int
+    (cons-stream initial-value
+                 (add-stream (scale-stream integrand dt)
+                             int)))
+  int)

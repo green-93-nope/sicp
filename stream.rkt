@@ -1,0 +1,88 @@
+#lang racket
+
+(provide (all-defined-out))
+
+(define (memo-proc proc)
+  (let ([already-run? #f]
+        [result #f])
+    (lambda ()
+      (if (not already-run?)
+          (begin (set! result (proc))
+                 (set! already-run? #t)
+                 result)
+          result))))
+
+(define-syntax-rule (delay exp)
+  (memo-proc (lambda () exp)))
+
+(define (force delayed-object)
+  (delayed-object))
+
+(define-syntax-rule (cons-my-stream a b)
+  (cons a (delay b)))
+
+(define (my-stream-car s)
+  (car s))
+(define (my-stream-cdr s)
+  (force (cdr s)))
+(define (my-stream-null? s)
+  (null? s))
+(define the-empty-my-stream '())
+
+(define (my-stream-ref s n)
+  (if (= n 0)
+      (my-stream-car s)
+      (my-stream-ref s (- n 1))))
+
+(define (my-stream-map proc . s)
+  (if (my-stream-null? (car s))
+      the-empty-my-stream
+      (cons-my-stream
+       (apply proc (map my-stream-car s))
+       (apply my-stream-map
+              (cons proc (map my-stream-cdr s))))))
+
+(define (my-stream-for-each proc s)
+  (if (my-stream-null? s)
+      'done
+      (begin (proc (my-stream-car s))
+             (my-stream-for-each proc (my-stream-cdr s)))))
+
+(define (my-stream-filter pred stream)
+  (cond [(my-stream-null? stream) the-empty-my-stream]
+        [(pred (my-stream-car stream))
+         (cons-my-stream (my-stream-car stream)
+                         (my-stream-filter pred (my-stream-cdr stream)))]
+        [#t (my-stream-filter pred (my-stream-cdr stream))]))
+
+(define (display-my-stream s)
+  (my-stream-for-each display-line s))
+
+(define (display-n-my-stream s n)
+  (when (and (not (my-stream-null? s)) (> n 0))
+         (display-line (my-stream-car s))
+         (display-n-my-stream
+          (my-stream-cdr s)
+          (- n 1))))
+
+(define (display-line x)
+  (newline)
+  (display x))
+
+(define (stream-enumerate-interval low high)
+  (if (> low high)
+      the-empty-my-stream
+      (cons-my-stream low
+                      (stream-enumerate-interval (+ low 1) high))))
+
+(define (scale-my-stream stream factor)
+  (my-stream-map (lambda (x) (* x factor)) stream))
+(define (add-my-stream s1 s2)
+  (my-stream-map + s1 s2))
+(define (div-my-stream s1 s2)
+  (my-stream-map / s1 s2))
+
+(define ones (cons-my-stream 1 ones))
+(define integers
+  (cons-my-stream 1
+                  (add-my-stream ones integers)))
